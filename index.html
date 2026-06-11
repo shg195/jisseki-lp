@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>夜に、灯る。｜人生の実績解除アプリ</title>
+
+<!-- OGP (X流入が全て) -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="生きてきた証を、解除していく。">
+<meta property="og:description" content="人生の実績解除アプリ（開発中）。3,000以上の実績。買い切り。月額はありません。">
+<meta property="og:image" content="https://shg195.github.io/jisseki-lp/assets/ogp.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="生きてきた証を、解除していく。">
+<meta name="twitter:description" content="人生の実績解除アプリ（開発中）">
+<meta name="twitter:image" content="https://shg195.github.io/jisseki-lp/assets/ogp.jpg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --night:#0E1726;
+    --night-deep:#080F1A;
+    --ember:#F2B36B;
+    --paper:#F6F1E7;
+    --ink:#1C2330;
+    --text:#C9D1DC;
+    --text-dim:#8C97A6;
+    --serif:"Shippori Mincho","Yu Mincho",serif;
+    --sans:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN",sans-serif;
+    --bronze:#D88B52;
+    --silver:#BCC6D4;
+    --gold:#F2B36B;
+    --platinum:#E9E3FA;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{
+    background:var(--night-deep);
+    color:var(--text);
+    font-family:var(--sans);
+    font-weight:300;
+    line-height:1.9;
+    -webkit-font-smoothing:antialiased;
+    overflow:hidden;
+  }
+  ::selection{background:rgba(242,179,107,.28);color:#fff;}
+  button{font-family:var(--sans);}
+
+  #app{position:absolute;inset:0;overflow:hidden;}
+
+  /* ===== screens ===== */
+  .screen{
+    position:absolute;inset:0;
+    display:flex;
+    overflow-y:auto;overflow-x:hidden;
+    opacity:0;pointer-events:none;
+    transition:opacity 1.05s ease;
+    -webkit-overflow-scrolling:touch;
+  }
+  .screen.active{opacity:1;pointer-events:auto;}
+  #app.instant .screen{transition:none;}
+  .inner{
+    margin:auto;width:100%;max-width:560px;
+    padding:76px 26px 64px;
+    text-align:center;
+    position:relative;z-index:1;
+  }
+
+  /* gentle element fade-in within screens */
+  .fad{opacity:0;transform:translateY(14px);transition:opacity 1.2s ease,transform 1.2s cubic-bezier(.2,.7,.2,1);}
+  .fad.show{opacity:1;transform:none;}
+  @media (prefers-reduced-motion:reduce){
+    .screen{transition:none;}
+    .fad{transition:none;opacity:1;transform:none;}
+  }
+
+  /* ===== back arrow ===== */
+  #back{
+    position:fixed;top:14px;left:14px;z-index:50;
+    width:44px;height:44px;border-radius:50%;
+    background:rgba(201,209,220,.06);
+    border:1px solid rgba(201,209,220,.16);
+    color:var(--text-dim);font-size:18px;line-height:1;
+    cursor:pointer;display:none;align-items:center;justify-content:center;
+    transition:color .3s,border-color .3s;
+  }
+  #back:hover{color:var(--ember);border-color:rgba(242,179,107,.4);}
+  #back.on{display:flex;}
+
+  /* ===== buttons ===== */
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:10px;
+    min-height:52px;padding:15px 44px;border-radius:3px;
+    font-family:var(--serif);font-weight:600;
+    font-size:15px;letter-spacing:.22em;text-indent:.22em;
+    color:#F4EFE3;background:transparent;
+    border:1px solid rgba(242,179,107,.55);cursor:pointer;text-decoration:none;
+    transition:color .35s ease,border-color .35s ease,background .35s ease,box-shadow .35s ease;
+  }
+  .btn:hover{color:var(--ember);border-color:var(--ember);background:rgba(242,179,107,.05);box-shadow:0 0 30px -10px rgba(242,179,107,.5);}
+  .btn.ghost{
+    color:var(--text);border-color:rgba(246,241,231,.34);
+  }
+  .btn.ghost:hover{border-color:rgba(242,179,107,.75);color:#F4EFE3;background:rgba(242,179,107,.04);box-shadow:0 0 26px -10px rgba(242,179,107,.4);}
+  /* 主CTA: 唯一の塗りボタン（額装の枠つき・光らせない） */
+  .btn.primary{
+    color:#1C1407;background:var(--ember);border-color:var(--ember);
+    font-weight:700;padding:17px 48px;
+    box-shadow:0 8px 24px -12px rgba(242,179,107,.4),inset 0 0 0 1px rgba(255,248,235,.45);
+    outline:1px solid rgba(242,179,107,.45);outline-offset:5px;
+  }
+  .btn.primary:hover{color:#1C1407;background:#F6C285;border-color:#F6C285;outline-color:rgba(242,179,107,.85);}
+
+  /* ===== screen 0 ===== */
+  #s0{
+    background-image:linear-gradient(180deg,rgba(8,15,26,.46),rgba(8,15,26,.18) 45%,rgba(8,15,26,.84)),url('assets/hero-tall.webp');
+    background-size:cover;background-position:center 30%;
+  }
+  @media(min-width:760px){
+    #s0{background-image:linear-gradient(180deg,rgba(8,15,26,.46),rgba(8,15,26,.18) 45%,rgba(8,15,26,.84)),url('assets/hero-wide.webp');}
+  }
+  .firstlight{position:relative;width:150px;height:150px;margin:0 auto;}
+  .firstlight svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;}
+  .firstlight circle{
+    fill:none;stroke:var(--ember);stroke-width:1.5;stroke-linecap:round;
+    stroke-dasharray:var(--circ0);stroke-dashoffset:var(--circ0);
+    filter:drop-shadow(0 0 6px rgba(242,179,107,.55));
+    transform:rotate(-90deg);transform-origin:center;opacity:.95;
+  }
+  .core{
+    position:absolute;left:50%;top:50%;width:14px;height:14px;border-radius:50%;
+    transform:translate(-50%,-50%);
+    background:radial-gradient(circle at 40% 35%,#fff,var(--ember) 60%);
+    opacity:.35;
+    box-shadow:0 0 12px 3px rgba(242,179,107,.4);
+    transition:opacity 1.4s ease,box-shadow 1.4s ease;
+  }
+  .firstlight.lit .core{
+    opacity:1;
+    box-shadow:0 0 26px 8px rgba(242,179,107,.75),0 0 80px 26px rgba(242,179,107,.3);
+  }
+  @media (prefers-reduced-motion:no-preference){
+    .firstlight.lit .core{animation:corebreathe 5.5s ease-in-out 1.6s infinite;}
+  }
+  @keyframes corebreathe{0%,100%{box-shadow:0 0 26px 8px rgba(242,179,107,.75),0 0 80px 26px rgba(242,179,107,.3);}50%{box-shadow:0 0 34px 11px rgba(242,179,107,.9),0 0 110px 36px rgba(242,179,107,.42);}}
+  #s0 h1{
+    margin-top:56px;
+    font-family:var(--serif);font-weight:600;color:#F4EFE3;
+    font-size:clamp(27px,7.4vw,44px);line-height:1.7;letter-spacing:.13em;text-indent:.13em;
+    text-shadow:0 2px 30px rgba(8,15,26,.7),0 0 50px rgba(242,179,107,.14);
+  }
+  #s0 h1 em,#s6 .copy em{font-style:normal;color:var(--ember);text-shadow:0 0 30px rgba(242,179,107,.4);}
+  #s0 .sub{margin-top:20px;font-size:clamp(12.5px,3.5vw,15px);letter-spacing:.22em;text-indent:.22em;color:rgba(201,209,220,.82);font-weight:400;}
+  #s0 .nextarea{margin-top:52px;min-height:52px;}
+  #s0 .fad{transition-duration:2.2s;}
+
+  /* ===== screen 1 ===== */
+  #s1{
+    background-image:linear-gradient(180deg,rgba(8,15,26,.84),rgba(8,15,26,.68) 45%,rgba(8,15,26,.9)),url('assets/hero-tall.webp');
+    background-size:cover;background-position:center 30%;
+  }
+  @media(min-width:760px){
+    #s1{background-image:linear-gradient(180deg,rgba(8,15,26,.84),rgba(8,15,26,.68) 45%,rgba(8,15,26,.9)),url('assets/hero-wide.webp');}
+  }
+  #s1 h2,.serif-h{
+    font-family:var(--serif);font-weight:600;color:#EDE7DA;
+    font-size:clamp(25px,6.6vw,40px);line-height:1.65;letter-spacing:.1em;text-indent:.1em;
+  }
+  #s1 h2 em,#s3 h2 em{font-style:normal;background:linear-gradient(transparent 72%,rgba(242,179,107,.32) 72%);padding:0 .04em;}
+  #s1 p{margin:34px auto 0;max-width:26em;font-size:clamp(14px,3.9vw,16.5px);line-height:2.2;letter-spacing:.04em;}
+  #s1 .nextarea{margin-top:56px;}
+  .emberdot{display:block;width:7px;height:7px;border-radius:50%;margin:0 auto 42px;
+    background:var(--ember);box-shadow:0 0 18px 4px rgba(242,179,107,.7),0 0 40px 10px rgba(242,179,107,.3);}
+  @media (prefers-reduced-motion:no-preference){.emberdot{animation:breathe 5s ease-in-out infinite;}}
+  @keyframes breathe{0%,100%{opacity:.6;}50%{opacity:1;}}
+
+  /* ===== 実績カード「夜の硝子」: 一枚のガラス窓。長押しで曇りを拭い、奥の灯を呼ぶ ===== */
+  .tierdot{width:10px;height:10px;border-radius:50%;flex:none;background:var(--td,var(--bronze));
+    box-shadow:0 0 10px 1px color-mix(in srgb,var(--td,var(--bronze)) 80%,transparent);}
+  .hg{
+    position:relative;width:min(339px,100%);margin:0 auto;
+    border-radius:18px;overflow:hidden;text-align:center;
+    border:1px solid rgba(195,210,240,.17);
+    box-shadow:0 30px 60px -30px rgba(0,0,0,.95),0 4px 18px -8px rgba(0,0,0,.6);
+    transition:border-color 1.2s ease;
+    user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;
+  }
+  .hg.unlocked{border-color:rgba(236,205,140,.38);transition:border-color 2s ease 1.9s;}
+  .hg::after{
+    content:"";position:absolute;left:8%;right:8%;top:0;height:1px;z-index:6;pointer-events:none;
+    background:linear-gradient(90deg,transparent,rgba(225,233,250,.4),transparent);
+  }
+  .hg-scene{position:absolute;inset:0;z-index:0;background:linear-gradient(178deg,#0E1426 0%,#121A30 55%,#1A1F33 100%);}
+  .hg-moon{position:absolute;inset:0;background:radial-gradient(120% 80% at 70% -10%,rgba(190,205,240,.14),transparent 55%);}
+  .hg-lamps{position:absolute;inset:0;transition:opacity 1.4s ease;opacity:.32;}
+  .hg-bokeh{position:absolute;border-radius:50%;filter:blur(14px);}
+  .hg-bokeh.b1{width:90px;height:90px;left:-18px;bottom:64px;background:rgba(238,192,114,.6);}
+  .hg-bokeh.b2{width:46px;height:46px;right:38px;bottom:132px;background:rgba(244,211,148,.55);}
+  .hg-bokeh.b3{width:26px;height:26px;right:92px;bottom:210px;background:rgba(206,196,240,.4);}
+  .hg-bokeh.b4{width:120px;height:120px;right:-34px;bottom:-30px;background:rgba(233,178,96,.5);}
+  .hg-bokeh.b5{width:18px;height:18px;left:70px;bottom:200px;background:rgba(225,222,248,.45);}
+  .hg-bokeh.b6{width:12px;height:12px;left:118px;top:96px;background:rgba(210,218,246,.4);}
+  /* ティアで奥の灯の数が変わる（静かな差異） */
+  .hg[data-tier="bronze"] .hg-bokeh.b2,.hg[data-tier="bronze"] .hg-bokeh.b3,.hg[data-tier="bronze"] .hg-bokeh.b5,.hg[data-tier="bronze"] .hg-bokeh.b6{display:none;}
+  .hg[data-tier="silver"] .hg-bokeh.b3,.hg[data-tier="silver"] .hg-bokeh.b6{display:none;}
+  .hg[data-tier="gold"] .hg-bokeh.b6{display:none;}
+  .hg-frost{
+    position:absolute;inset:0;z-index:2;pointer-events:none;
+    -webkit-backdrop-filter:blur(16px) saturate(.8) brightness(1.1);
+    backdrop-filter:blur(16px) saturate(.8) brightness(1.1);
+    background:radial-gradient(130% 90% at 25% 0%,rgba(205,216,238,.13),transparent 58%),rgba(178,192,218,.1);
+    transition:opacity 1.6s ease;
+  }
+  .hg-frost::before{
+    content:"";position:absolute;inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    opacity:.1;mix-blend-mode:overlay;
+  }
+  .hg-sheen{
+    position:absolute;inset:0;z-index:3;pointer-events:none;
+    background:linear-gradient(115deg,transparent 30%,rgba(220,230,250,.07) 42%,rgba(220,230,250,.02) 50%,transparent 60%);
+  }
+  .hg-inner{
+    position:absolute;inset:9px;z-index:3;pointer-events:none;border-radius:12px;
+    border:1px solid rgba(205,217,240,.14);
+    transition:border-color 2s ease 1.9s;
+  }
+  .hg.unlocked .hg-inner{border-color:rgba(236,205,140,.3);}
+  .hg-content{
+    position:relative;z-index:4;display:flex;flex-direction:column;align-items:center;
+    text-align:center;padding:30px 28px 26px;min-height:440px;
+  }
+  .hg-rank{display:flex;gap:7px;margin-bottom:24px;}
+  .hg-rank span{width:3px;height:19px;border-radius:1.5px;background:rgba(196,210,236,.14);transition:background .9s ease,box-shadow .9s ease;}
+  .hg-rank span.on{background:rgba(208,220,242,.66);}
+  .hg.unlocked .hg-rank span.on{background:#EFD49C;box-shadow:0 0 10px rgba(235,203,142,.65);}
+  .hg-title{
+    font-family:var(--serif);font-size:clamp(24px,6.6vw,29px);font-weight:600;letter-spacing:.08em;line-height:1.45;
+    color:rgba(232,238,250,.97);transition:color 1.2s ease,text-shadow 1.2s ease;
+  }
+  .hg-title .t{display:block;white-space:nowrap;}
+  .hg.unlocked .hg-title{color:#FAF3E2;text-shadow:0 0 26px rgba(236,194,120,.45);}
+  .hg-label{
+    display:block;font-size:13px;letter-spacing:.34em;text-indent:.34em;margin-bottom:10px;
+    color:rgba(196,206,226,.55);transition:color 1.2s ease;font-weight:500;font-family:var(--sans);
+  }
+  .hg.unlocked .hg-label{color:rgba(238,222,188,.6);}
+  .hg-cond{
+    font-size:14.5px;line-height:2.1;letter-spacing:.04em;color:rgba(199,208,226,.74);
+    margin:22px 0 0;transition:color 1.2s ease;text-wrap:balance;font-weight:400;
+  }
+  .hg.unlocked .hg-cond{color:rgba(240,231,211,.82);}
+  /* 下部ゾーン: 高さ固定＝解除時の「再設置」ジャンプを根絶 */
+  .hg-foot{margin-top:auto;padding-top:22px;position:relative;width:100%;min-height:118px;}
+  .hg-press{
+    position:absolute;left:0;right:0;bottom:0;
+    display:flex;flex-direction:column;align-items:center;gap:13px;
+    transition:opacity .5s ease,transform .5s ease;
+  }
+  .hg.unlocked .hg-press{opacity:0;transform:scale(.92);pointer-events:none;}
+  .hg-btn{
+    position:relative;width:76px;height:76px;border-radius:50%;border:none;
+    background:rgba(196,210,236,.07);
+    box-shadow:inset 0 0 0 1px rgba(205,217,240,.22);
+    cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;
+    transition:box-shadow .4s ease;font-family:var(--sans);
+  }
+  .hg-btn.pressing{box-shadow:inset 0 0 0 1px rgba(236,205,140,.4);}
+  .hg-ring{
+    position:absolute;inset:-7px;border-radius:50%;
+    -webkit-mask:radial-gradient(circle closest-side,transparent calc(100% - 3px),#000 calc(100% - 2.5px));
+    mask:radial-gradient(circle closest-side,transparent calc(100% - 3px),#000 calc(100% - 2.5px));
+    background:conic-gradient(rgba(238,206,140,.95) 0deg,rgba(200,212,236,.16) 0deg);
+  }
+  .hg-core{
+    position:absolute;inset:19px;border-radius:50%;opacity:0;transform:scale(.4);
+    background:radial-gradient(circle,rgba(244,213,150,.95),rgba(236,194,120,.45) 65%,transparent 75%);
+    filter:blur(1px);
+  }
+  .hg-plabel{font-size:12.5px;letter-spacing:.3em;text-indent:.3em;color:rgba(202,211,230,.72);}
+  .hg-after{
+    position:absolute;left:0;right:0;bottom:14px;
+    display:flex;flex-direction:column;align-items:center;gap:14px;
+    opacity:0;pointer-events:none;
+  }
+  .hg.unlocked .hg-after{opacity:1;}
+  .hg-date{
+    font-family:var(--serif);font-size:13px;letter-spacing:.12em;white-space:nowrap;
+    color:rgba(242,230,202,.88);display:flex;align-items:center;gap:9px;max-width:100%;
+  }
+  .hg-date::before,.hg-date::after{content:"";flex:0 1 18px;width:18px;height:1px;background:rgba(235,203,142,.45);}
+  /* 隠し実績: 晴れない硝子（封印） */
+  .hg.sealedglass .hg-frost{opacity:.92;}
+  .hg.sealedglass .hg-lamps{opacity:.22;}
+  .hg.sealedglass .hg-content{min-height:380px;justify-content:center;}
+  /* 解除の瞬間: 街の灯→ふくらみ→カードの息→二つ名の熱→ランク点灯→日付 */
+  @media (prefers-reduced-motion:no-preference){
+    .hg.just .hg-bokeh{animation:fxd-light 1s ease backwards;}
+    .hg.just .hg-bokeh.b1{animation-delay:.1s;}
+    .hg.just .hg-bokeh.b4{animation-delay:.3s;}
+    .hg.just .hg-bokeh.b2{animation-delay:.5s;}
+    .hg.just .hg-bokeh.b5{animation-delay:.65s;}
+    .hg.just .hg-bokeh.b3{animation-delay:.8s;}
+    .hg.just .hg-bokeh.b6{animation-delay:.9s;}
+    .hg.just .hg-lamps{animation:fxa-swell 2.4s cubic-bezier(.2,.7,.3,1);}
+    .hg.just{animation:hg-breath 1.8s ease;}
+    .hg.just .hg-title{animation:fxb-warm 1.6s ease 1.9s;}
+    .hg.just .hg-rank span.on{animation:hg-ignite .7s ease backwards;}
+    .hg.just .hg-rank span.on:nth-child(1){animation-delay:2.05s;}
+    .hg.just .hg-rank span.on:nth-child(2){animation-delay:2.2s;}
+    .hg.just .hg-rank span.on:nth-child(3){animation-delay:2.35s;}
+    .hg.just .hg-rank span.on:nth-child(4){animation-delay:2.5s;}
+    .hg.just .hg-after{animation:rise-in 1s ease 2.3s backwards;}
+  }
+  @keyframes hg-breath{0%{transform:scale(1);}28%{transform:scale(1.014);}100%{transform:scale(1);}}
+  @keyframes hg-ignite{0%{background:rgba(208,220,242,.66);box-shadow:none;}55%{background:#FFF2D4;box-shadow:0 0 18px rgba(245,216,150,.95);}100%{background:#EFD49C;box-shadow:0 0 10px rgba(235,203,142,.65);}}
+  @keyframes fxa-swell{0%{filter:brightness(1);}14%{filter:brightness(var(--swell,1.75)) saturate(1.18);}100%{filter:brightness(1);}}
+  @keyframes fxb-warm{0%{text-shadow:0 0 26px rgba(236,194,120,.45);}35%{text-shadow:0 0 38px rgba(244,208,138,.85);}100%{text-shadow:0 0 26px rgba(236,194,120,.45);}}
+  @keyframes fxd-light{0%{opacity:.15;transform:scale(.82);}60%{opacity:1.25;transform:scale(1.06);}100%{opacity:1;transform:scale(1);}}
+  @keyframes rise-in{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+  /* ティアで解除の灯のふくらみが強くなる */
+  .hg[data-tier="bronze"]{--swell:1.5;}
+  .hg[data-tier="silver"]{--swell:1.65;}
+  .hg[data-tier="gold"]{--swell:1.85;}
+  .hg[data-tier="platinum"]{--swell:2.05;}
+  /* ===== 栞シート（スマホ: 実績を選ぶとカードが下から差し込まれる） ===== */
+  .vb-scrim{
+    position:fixed;inset:0;background:rgba(4,6,12,.62);
+    opacity:0;pointer-events:none;transition:opacity .4s ease;z-index:40;
+  }
+  .vb-sheet{
+    position:fixed;left:8px;right:8px;bottom:0;z-index:41;
+    background:#0E1322;border:1px solid rgba(196,210,236,.16);border-bottom:none;
+    border-radius:18px 18px 0 0;padding:10px 14px 18px;
+    transform:translateY(105%);transition:transform .45s cubic-bezier(.25,.8,.3,1);
+    max-height:88svh;overflow-y:auto;
+  }
+  #s3.sheetopen .vb-scrim{opacity:1;pointer-events:auto;}
+  #s3.sheetopen .vb-sheet{transform:translateY(0);}
+  .vb-handle{width:100%;display:flex;justify-content:center;background:none;border:none;padding:6px 0 4px;cursor:pointer;}
+  .vb-handle::before{content:"";width:38px;height:4px;border-radius:2px;background:rgba(196,210,236,.25);}
+  .heroslot{margin-top:6px;}
+  @media (prefers-reduced-motion:no-preference){.heroslot .hg.swapin{animation:swapin .55s ease;}}
+  @keyframes swapin{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
+  /* 隠し実績: 夜の特別カード（書簡2版を復元） */
+  .sp{
+    position:relative;width:min(320px,100%);margin:0 auto;border-radius:6px;
+    padding:40px 26px 34px;text-align:center;
+    background:linear-gradient(168deg,#131D31,#0A1322);
+    box-shadow:0 26px 70px -20px rgba(0,0,0,.95),0 0 90px -14px rgba(242,179,107,.4),0 0 0 1px rgba(242,179,107,.3) inset;
+  }
+  .sp::after{content:"";position:absolute;inset:8px;border:1px solid rgba(242,179,107,.32);border-radius:3px;pointer-events:none;}
+  .sp h3{font-family:var(--serif);font-weight:700;font-size:clamp(20px,5.6vw,24px);letter-spacing:.04em;color:#F4EFE3;white-space:nowrap;}
+  .sp .cond{margin-top:12px;font-size:13.5px;line-height:1.9;color:#C9D1DC;}
+  .sp .sbtn{position:relative;display:block;width:64px;height:64px;margin:26px auto 0;border-radius:50%;}
+  .sp .sbtn svg{position:absolute;inset:0;width:100%;height:100%;}
+  .sp .sbtn circle{fill:none;stroke:rgba(246,241,231,.3);stroke-width:2;stroke-dasharray:3 7;}
+  .sp .score{position:absolute;left:50%;top:50%;width:10px;height:10px;border-radius:50%;transform:translate(-50%,-50%);
+    background:radial-gradient(circle at 40% 35%,#fff,var(--ember) 60%);opacity:.2;}
+
+  /* ===== screen 2 ===== */
+  #s2{background:radial-gradient(130% 100% at 50% 0%,var(--night) 0%,var(--night-deep) 80%);}
+  #s2 .hg{margin-top:10px;}
+  #s2 .nextarea{margin-top:46px;min-height:52px;}
+
+  /* ===== screen 3: 道具の画面＝左寄せの画面ヘッダー（儀式画面の中央寄せとの対比） ===== */
+  #s3{background:radial-gradient(130% 110% at 50% 12%,var(--night) 0%,var(--night-deep) 85%);}
+  #s3 .inner{max-width:640px;text-align:left;}
+  #s3 h2{
+    font-family:var(--serif);font-weight:600;color:#F2EDE0;
+    font-size:clamp(19px,5.2vw,25px);letter-spacing:.12em;line-height:1.95;
+  }
+  #s3 h2::before{
+    content:"";display:block;width:28px;height:2px;border-radius:1px;
+    background:var(--ember);opacity:.75;margin-bottom:18px;
+  }
+  #s3 .nextarea{text-align:center;margin-top:26px;}
+  /* ===== 目次と栞: 分類は本の目次・開いた分類だけ3件が展開 ===== */
+  .cat-mark.bars{display:inline-flex;gap:3px;align-items:flex-end;height:14px;flex:none;}
+  .cat-mark.bars span{width:2px;height:14px;border-radius:1px;background:rgba(196,210,236,.13);transition:background .4s,box-shadow .4s;}
+  .cat-mark.bars span.on{background:rgba(196,210,236,.55);}
+  .cat-mark.bars.lit span.on{background:#EBCB8E;box-shadow:0 0 6px rgba(235,203,142,.6);}
+  .cat-mark.lamp{display:inline-block;width:6px;height:6px;border-radius:50%;flex:none;background:rgba(196,210,236,.4);transition:background .4s,box-shadow .4s;}
+  .cat-mark.lamp.lit{background:#EBCB8E;box-shadow:0 0 8px rgba(235,203,142,.75);}
+  .udot{display:inline-block;width:7px;height:7px;border-radius:50%;flex:none;border:1px solid rgba(170,180,205,.45);background:transparent;transition:background .4s,border-color .4s,box-shadow .4s;}
+  .udot.on{border-color:rgba(235,203,142,.2);background:#D9B871;box-shadow:0 0 7px rgba(235,203,142,.7);}
+  .vb-toc{margin-top:24px;text-align:left;}
+  .vb-cat{border-bottom:1px solid rgba(196,210,236,.08);}
+  .vb-cat-head{
+    display:flex;align-items:center;gap:14px;width:100%;
+    background:none;border:none;padding:11px 2px;
+    font-family:var(--serif);font-size:15px;font-weight:600;letter-spacing:.1em;
+    color:#8891A8;cursor:pointer;transition:color .3s;
+  }
+  .vb-cat.open .vb-cat-head{color:#F0E6CE;}
+  .vb-leader{flex:1;border-bottom:1px dotted rgba(150,162,190,.35);transform:translateY(-4px);}
+  .vb-entries{overflow:hidden;max-height:0;transition:max-height .45s ease;}
+  .vb-cat.open .vb-entries{max-height:260px;}
+  .vb-entry{
+    display:flex;align-items:baseline;gap:10px;width:100%;text-align:left;
+    background:none;border:none;border-left:1px solid rgba(196,210,236,.16);
+    margin-left:9px;padding:8px 2px 8px 16px;
+    font-family:var(--sans);color:#818AA0;cursor:pointer;
+    transition:color .3s,border-color .3s;
+  }
+  .vb-entry.sel{color:#F0E6CE;border-left-color:rgba(235,203,142,.75);}
+  .vb-entry .udot{transform:translateY(-1px);}
+  .vb-entry-title{font-family:var(--serif);font-size:13.5px;font-weight:600;letter-spacing:.05em;}
+  .vb-entry-cond{display:block;font-size:10.5px;line-height:1.7;color:#6B7388;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .vb-entry.sel .vb-entry-cond{color:#9D9783;}
+  .vb-pad{height:10px;}
+  /* 広い画面: 目次（左）と舞台（右）の2カラム＝スクロールなし */
+  @media(min-width:860px){
+    #s3 .inner{max-width:920px;display:grid;grid-template-columns:minmax(0,1fr) 380px;column-gap:52px;align-items:start;}
+    #s3 h2{grid-column:1 / -1;}
+    #s3 .vb-toc{grid-column:1;grid-row:2 / span 2;padding-right:42px;border-right:1px solid rgba(196,210,236,.1);}
+    #s3 .vb-sheet{position:static;grid-column:2;grid-row:2;transform:none;background:transparent;border:none;border-radius:0;padding:0;max-height:none;overflow:visible;margin-top:22px;}
+    #s3 .vb-handle{display:none;}
+    #s3 .vb-scrim{display:none;}
+    #s3 .nextarea{grid-column:2;grid-row:3;text-align:right;margin-top:16px;}
+    .vb-cat-head{font-size:16px;padding:12px 4px;}
+    .vb-entry-title{font-size:14.5px;}
+  }
+  #s3 .nextarea{margin-top:54px;}
+
+  /* ===== screen 4 ===== */
+  #s4{background:var(--night-deep);}
+  #s4 .inner{max-width:none;padding-left:0;padding-right:0;}
+  .lightfield,.dust{position:absolute;inset:0;z-index:0;pointer-events:none;}
+  .lightfield .lp,.dust .lp{position:absolute;border-radius:50%;background:var(--ember);}
+  #s4 .content{position:relative;z-index:1;}
+  #s4 .count-line{font-family:var(--serif);font-weight:500;color:#E7E1D4;font-size:clamp(19px,5.4vw,28px);letter-spacing:.08em;line-height:1.8;}
+  #s4 .count-line em{font-style:normal;font-weight:700;color:var(--ember);font-size:1.5em;padding:0 .08em;}
+  #s4 .scale-line{margin-top:26px;font-family:var(--serif);font-weight:600;color:#F4EFE3;font-size:clamp(22px,6vw,36px);letter-spacing:.06em;line-height:1.7;}
+  #s4 .scale-line em{font-style:normal;font-weight:700;color:var(--ember);font-size:1.5em;letter-spacing:.02em;text-shadow:0 0 44px rgba(242,179,107,.45);}
+  .bands{display:flex;flex-direction:column;gap:14px;margin-top:54px;}
+  .bands .band{opacity:0;}
+  .bands.on .band{animation:bandin 1.1s cubic-bezier(.2,.7,.2,1) forwards;animation-delay:var(--bd,0s);}
+  .band.rev{--from:-60px;}
+  @keyframes bandin{from{opacity:0;transform:translateX(var(--from,60px));}to{opacity:1;transform:none;}}
+  @media (prefers-reduced-motion:reduce){.bands .band{opacity:1;animation:none !important;}}
+  .band{overflow:hidden;width:100%;-webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);}
+  .track{display:flex;width:max-content;}
+  @media (prefers-reduced-motion:no-preference){
+    .track{animation:marq var(--dur,60s) linear infinite;}
+    .band.rev .track{animation-name:marqrev;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .band{overflow-x:auto;}
+  }
+  @keyframes marq{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+  @keyframes marqrev{from{transform:translateX(-50%);}to{transform:translateX(0);}}
+  .mini{
+    flex:none;width:240px;margin-right:14px;
+    background:rgba(16,24,44,.86);
+    border:1px solid rgba(195,210,240,.22);
+    border-radius:10px;padding:15px 18px;text-align:left;
+    box-shadow:0 10px 26px -12px rgba(0,0,0,.7);
+  }
+  .mini h4{font-family:var(--serif);font-weight:600;font-size:15px;color:#F2F5FB;letter-spacing:.03em;line-height:1.5;}
+  .mini p{margin-top:5px;font-size:11.5px;line-height:1.75;color:#B9C2D2;font-weight:400;}
+  #s4 .nextarea{margin-top:52px;min-height:52px;}
+
+  /* ===== screen 5 ===== */
+  #s5{background:radial-gradient(110% 80% at 50% 45%,#0B1320 0%,#05090F 75%);}
+  #s5 .fad{transition-duration:2.4s;}
+  #s5 .cue{margin-top:42px;font-size:11.5px;letter-spacing:.3em;text-indent:.3em;color:var(--text-dim);}
+  #s5 .cue b{color:var(--ember);font-weight:500;}
+
+  /* ===== screen 6｜ヒーローコピー再掲 → 下へ自動スクロールで価格・CTA ===== */
+  #s6{
+    display:block;
+    background-image:linear-gradient(180deg,rgba(8,15,26,.7),rgba(8,15,26,.5) 45%,rgba(8,15,26,.86)),url('assets/hero-tall.webp');
+    background-size:cover;background-position:center 30%;
+  }
+  @media(min-width:760px){
+    #s6{background-image:linear-gradient(180deg,rgba(8,15,26,.7),rgba(8,15,26,.5) 45%,rgba(8,15,26,.86)),url('assets/hero-wide.webp');}
+  }
+  #s6 .copybeat{
+    position:relative;
+    min-height:100svh;display:flex;align-items:center;justify-content:center;
+    padding:0 26px;text-align:center;
+  }
+  #s6 .endlight{
+    display:block;width:12px;height:12px;border-radius:50%;margin:0 auto 42px;
+    background:radial-gradient(circle at 40% 35%,#fff,var(--ember) 60%);
+    box-shadow:0 0 24px 7px rgba(242,179,107,.65),0 0 70px 22px rgba(242,179,107,.25);
+  }
+  @media (prefers-reduced-motion:no-preference){
+    #s6 .endlight.show{animation:breathe 5s ease-in-out 1.5s infinite;}
+  }
+  #s6 .subcopy{
+    margin-top:28px;font-size:clamp(13px,3.6vw,15.5px);
+    letter-spacing:.14em;text-indent:.14em;color:rgba(201,209,220,.85);
+  }
+  #s6 .scrollcue{
+    position:absolute;bottom:clamp(112px,17svh,200px);left:50%;transform:translateX(-50%);
+    display:flex;flex-direction:column;align-items:center;gap:10px;
+    font-size:10.5px;letter-spacing:.34em;text-indent:.34em;color:var(--text-dim);
+    cursor:pointer;
+  }
+  #s6 .scrollcue .line{width:1px;height:44px;background:linear-gradient(180deg,transparent,var(--ember));opacity:.7;}
+  @media (prefers-reduced-motion:no-preference){
+    #s6 .scrollcue .line{animation:cueline 2.6s ease-in-out infinite;}
+  }
+  @keyframes cueline{0%,100%{transform:scaleY(.4);opacity:.3;transform-origin:top;}50%{transform:scaleY(1);opacity:.8;transform-origin:top;}}
+  #s6 .copy{
+    font-family:var(--serif);font-weight:600;color:#F4EFE3;
+    font-size:clamp(24px,6.6vw,40px);line-height:1.8;letter-spacing:.16em;text-indent:.16em;
+    text-shadow:0 2px 30px rgba(8,15,26,.7),0 0 50px rgba(242,179,107,.14);
+  }
+  #s6 .copybeat .fad{transition-duration:2s;}
+  #s6 .pricearea{
+    min-height:100svh;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:110px 26px 90px;text-align:center;
+    background:linear-gradient(180deg,rgba(8,15,26,0) 0%,rgba(8,15,26,.94) 14%,#0d0a06 55%);
+  }
+  .pricebox{
+    position:relative;display:inline-block;
+    padding:40px 34px 34px;
+    border:1px solid rgba(242,179,107,.34);border-radius:3px;
+    background:rgba(242,179,107,.03);
+  }
+  .pricebox::after{content:"";position:absolute;inset:6px;border:1px solid rgba(246,241,231,.1);border-radius:2px;pointer-events:none;}
+  #s6 .price{font-family:var(--serif);font-weight:700;color:#F4EFE3;font-size:clamp(26px,7.4vw,46px);letter-spacing:.04em;line-height:1.55;text-shadow:0 0 40px rgba(242,179,107,.26);}
+  #s6 .price em{font-style:normal;color:var(--ember);}
+  #s6 .pnote{margin-top:22px;font-size:14.5px;letter-spacing:.12em;text-indent:.12em;color:var(--text);}
+  #s6 .pnote small{display:block;margin-top:10px;font-size:12px;letter-spacing:.1em;color:var(--text-dim);}
+  #s6 .ctaline{margin-top:64px;font-family:var(--serif);font-weight:600;color:#EDE7DA;font-size:clamp(18px,5vw,26px);letter-spacing:.12em;text-indent:.12em;}
+  #s6 .nextarea{margin-top:34px;}
+  #s6 .dev{margin-top:20px;font-size:11px;letter-spacing:.32em;text-indent:.32em;color:var(--text-dim);}
+</style>
+</head>
+<body>
+
+<button id="back" type="button" aria-label="戻る">←</button>
+
+<div id="app">
+
+  <!-- 画面0｜最初の一灯 -->
+  <section class="screen" id="s0" data-screen-label="画面0 最初の一灯">
+    <div class="inner">
+      <div class="firstlight" id="firstlight">
+        <svg viewBox="0 0 150 150"><circle cx="75" cy="75" r="62"></circle></svg>
+        <span class="core"></span>
+      </div>
+      <h1 class="fad" id="s0title">生きてきた<em>証</em>を、<br>解除していく。</h1>
+      <p class="sub fad" id="s0sub">人生の実績解除アプリ（開発中）</p>
+      <div class="nextarea">
+        <button class="btn ghost fad" id="s0next" type="button">次へ</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 画面1｜ブリッジ -->
+  <section class="screen" id="s1" data-screen-label="画面1 ブリッジ">
+    <div class="inner">
+      <span class="emberdot"></span>
+      <h2>人生は、<br><em>最高のゲーム</em>だ。</h2>
+      <p>攻略本はない。リセットもない。<br>これまでも、これからも、ずっと人生だ。</p>
+      <div class="nextarea">
+        <button class="btn" id="s1next" type="button">実績を見る</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 画面2｜はじめての解除 -->
+  <section class="screen" id="s2" data-screen-label="画面2 はじめての解除">
+    <div class="inner">
+      <div id="firstcard"></div>
+      <div class="nextarea"><button class="btn ghost fad" id="s2next" type="button" hidden>次へ</button></div>
+    </div>
+  </section>
+
+  <!-- 画面3｜チップ閲覧 -->
+  <section class="screen" id="s3" data-screen-label="画面3 チップ閲覧">
+    <div class="inner">
+      <h2>これまでの<em>人生</em>を、<br>振り返ってみよう。</h2>
+      <div class="vb-toc" id="toc"></div>
+      <div class="vb-scrim" id="scrim"></div>
+      <div class="vb-sheet" id="sheet">
+        <button class="vb-handle" id="handle" type="button" aria-label="閉じる"></button>
+        <div class="heroslot" id="heroslot"></div>
+      </div>
+      <div class="nextarea">
+        <button class="btn ghost" id="s3next" type="button">次へ</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 画面4｜スケールのリビール -->
+  <section class="screen" id="s4" data-screen-label="画面4 スケール">
+    <div class="lightfield" id="lightfield" aria-hidden="true"></div>
+    <div class="inner">
+      <div class="content">
+        <p class="count-line fad" id="countline">今あなたが解除した実績は、<em id="countnum">1</em>個。</p>
+        <p class="scale-line fad" id="scaleline">実績は、<em>3,000以上</em>ある。</p>
+        <div class="bands" id="bands"></div>
+        <div class="nextarea">
+          <button class="btn ghost fad" id="s4next" type="button">次へ</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 画面5｜隠し実績 -->
+  <section class="screen" id="s5" data-screen-label="画面5 隠し実績">
+    <div class="inner">
+      <div class="fad" id="hiddenwrap"></div>
+      <p class="cue fad" id="s5cue"><b>タップ</b>で、つづける。</p>
+    </div>
+  </section>
+
+  <!-- 画面6｜ヒーローコピー再掲 → 価格＋CTA（縦スクロール一体） -->
+  <section class="screen" id="s6" data-screen-label="画面6 コピー再掲と価格CTA">
+    <div class="flow">
+      <div class="copybeat" id="copybeat">
+        <div>
+          <span class="endlight fad" id="endlight"></span>
+          <p class="copy fad" id="s6copy">生きてきた<em>証</em>を、<br>解除していく。</p>
+          <p class="subcopy fad" id="s6sub">あなたの人生、あなたの証。</p>
+        </div>
+        <div class="scrollcue fad" id="s6cue">
+          <span>下へ</span>
+          <span class="line"></span>
+        </div>
+      </div>
+      <div class="pricearea" id="pricearea">
+        <div class="pricebox fad" id="pricebox">
+          <p class="price"><em>3,000円</em>で、<br>3,000以上の実績。</p>
+          <p class="pnote">買い切り。月額はありません。<small>実績は、アップデートで増えていく。</small></p>
+        </div>
+        <div class="fad" id="ctablock">
+          <p class="ctaline">リリースの日に、一通だけ。</p>
+          <div class="nextarea">
+            <a class="btn primary" href="https://forms.gle/PHEj5DShFAEb1oQD7" target="_blank" rel="noopener">リリース通知を受け取る</a>
+          </div>
+          <p class="dev">現在開発中</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  'use strict';
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /* rAF heartbeat: transitions/animations freeze when the page isn't actually
+     being rendered (hidden/offscreen iframe) even if visibilityState says
+     'visible'. If frames aren't ticking, snap states instead of animating. */
+  var lastFrame = 0;
+  (function hb(){ lastFrame = performance.now(); requestAnimationFrame(hb); })();
+  function live(){ return (performance.now() - lastFrame) < 250; }
+
+  /* ================= data ================= */
+  var TIER = {
+    bronze:{label:'一歩ずつの足跡', v:'var(--bronze)'},
+    silver:{label:'勇気の記録', v:'var(--silver)'},
+    gold:{label:'忘れられない瞬間', v:'var(--gold)'},
+    platinum:{label:'物語の頂', v:'var(--platinum)'}
+  };
+
+  var CHIPS = [
+    {id:'tb', name:'一歩ずつの足跡', sub:'ブロンズ', dot:'bronze', cards:[
+      {t:'無音の朝', c:'アラームが鳴る前に、自然に目が覚めた。', tier:'bronze'},
+      {t:'最後の一個', c:'からあげの最後の一個を、人に譲った。', tier:'bronze'},
+      {t:'傘を信じなかった日', c:'降水確率90%の日に傘を持たず出かけ、濡れて帰ってしまった。', tier:'bronze'}
+    ]},
+    {id:'ts', name:'勇気の記録', sub:'シルバー', dot:'silver', cards:[
+      {t:'先手のごめん', c:'意地を張りかけて、自分から先に謝った。', tier:'silver'},
+      {t:'先延ばしの終わり', c:'ずっと行けていなかった歯医者に、予約の電話をかけた。', tier:'silver'},
+      {t:'失恋の供養', c:'言えなかった「好きです」を、言わないまま卒業した相手の幸せを願った。', tier:'silver'}
+    ]},
+    {id:'tg', name:'忘れられない瞬間', sub:'ゴールド', dot:'gold', cards:[
+      {t:'鍵のまわる音', c:'自分で買った家の鍵を、初めて回した。', tier:'gold'},
+      {t:'大人の儀式', c:'初めて自分で確定申告を終えた。', tier:'gold'},
+      {t:'辺境の民', c:'外国で、現地の人に道を聞かれて答えた。', tier:'gold'}
+    ]},
+    {id:'tp', name:'物語の頂', sub:'プラチナ', dot:'platinum', cards:[
+      {t:'歴史の側', c:'自分の名前が辞書に載った。', tier:'platinum'},
+      {t:'空にある名前', c:'小惑星に、自分で名前をつけた。', tier:'platinum'},
+      {t:'てっぺんの味', c:'オリンピックの表彰台で、金メダルを噛んだ。', tier:'platinum'}
+    ]},
+    {id:'fh', name:'はじめての', sub:'特集', dot:null, cards:[
+      {t:'常連への第一歩', c:'初めて入った店で、店の名前がついたメニューを頼んだ。', tier:'bronze'},
+      {t:'自分だけの夜', c:'一人暮らしの部屋で、最初の夜を過ごした。', tier:'silver'},
+      {t:'友人代表', c:'親友の結婚式で、スピーチをした。', tier:'gold'}
+    ]},
+    {id:'ft', name:'食卓冒険譚', sub:'特集', dot:null, cards:[
+      {t:'深夜の背徳感', c:'夜中にラーメンを、食べてしまった。', tier:'bronze'},
+      {t:'行列の答え合わせ', c:'行列の店に並んで、噂の一皿を食べた。', tier:'bronze'},
+      {t:'魚との対面', c:'魚を一匹、自分でさばいた。', tier:'silver'}
+    ]},
+    {id:'fk', name:'言えなかった言葉', sub:'特集', dot:null, cards:[
+      {t:'ありがとうの直球', c:'親に、面と向かって「ありがとう」と言った。', tier:'silver'},
+      {t:'声に出した好き', c:'好きな人に、「好き」と伝えた。', tier:'silver'},
+      {t:'十年目の白状', c:'昔のいたずらを、親に白状した。', tier:'silver'}
+    ]},
+    {id:'fj', name:'大人の自由研究', sub:'特集', dot:null, cards:[
+      {t:'自由意志の勉強', c:'誰にも言われていないのに、勉強を始めた。', tier:'bronze'},
+      {t:'合格通知の重み', c:'自分で選んで受けた試験に、合格した。', tier:'silver'},
+      {t:'独学の一冊', c:'参考書を一冊、最後までやり切った。', tier:'silver'}
+    ]}
+  ];
+
+  var FIRST = {t:'はじめての解除', c:'はじめての実績を、解除した。', tier:'bronze'};
+  var HIDDEN = {t:'最終回の主人公', c:'悔いのない人生を送る。', tier:'platinum'};
+
+  var BANDS = [
+    [['風の住人','パラグライダーで、鳥より高く飛んだ'],['日の出の目撃者','日の出を見るために、早起きした'],['朝の浮力','熱気球で、夜明けの空に浮かんだ'],['三つの星','夜空を見上げて、夏の大三角を見つけた'],['地上3,800m','スカイダイビングで、空へ飛び込んだ'],['夜明けの解散','友達と語り明かして、朝日と一緒に解散した']],
+    [['土から茶碗','ろくろを回して、自分の茶碗を焼いた'],['手紙の重さ','手書きの手紙を、ポストに出した'],['金の継ぎ目','割れた器を、金継ぎで直した'],['満点の昼寝','日曜の昼に、何もせず昼寝をした'],['はじめての帯','着物を、自分で着付けた'],['傘の貸し手','にわか雨で、傘を貸した']],
+    [['最果ての光','オーロラを、この目で見た'],['満開の下','満開の桜の下で、弁当を食べた'],['山頂の御来光','富士山の頂上で、日の出を待った'],['ページの向こう側','本を一冊、最後まで読み終えた'],['18きっぷの果て','青春18きっぷで、海の見える無人駅に降りた'],['自販機の祝福','自動販売機で、当たりが出た']],
+    [['鷹のまなざし','鷹匠体験で、腕に鷹をとめた'],['静かな金曜日','映画館で、一人で映画を観た'],['無人島の夜','無人島で、一晩過ごした'],['一等賞のテープ','運動会のかけっこで、一番にゴールテープを切った'],['蕎麦の三たて','そば粉から、蕎麦を打った'],['億の紙切れ','宝くじの一等が、当たってしまった']]
+  ];
+
+  /* ================= state ================= */
+  var unlocked = {};            // id -> true
+  function count(){ var n=0; for(var k in unlocked) n++; return n; }
+
+  /* ================= screen machine ================= */
+  var app = document.getElementById('app');
+  var screens = ['s0','s1','s2','s3','s4','s5','s6'].map(function(id){ return document.getElementById(id); });
+  var backBtn = document.getElementById('back');
+  var BACK = {2:1, 3:1, 4:3, 6:4};   // 画面5はタップ送りのため戻る無し
+  var current = 0;
+
+  /* watchdog: if a fade is frozen (page not being rendered), snap it visible */
+  function ensureVisible(el, ms){
+    setTimeout(function(){
+      if(parseFloat(getComputedStyle(el).opacity) < 0.99){ el.style.transition = 'none'; }
+    }, ms || 1400);
+  }
+
+  function goto(n){
+    if(!live()){ app.classList.add('instant'); } else { app.classList.remove('instant'); }
+    screens[current].classList.remove('active');
+    current = n;
+    var sc = screens[n];
+    sc.classList.add('active');
+    ensureVisible(sc);
+    sc.scrollTop = 0;
+    backBtn.classList.toggle('on', BACK[n] !== undefined);
+    if(n===2 && unlocked['first']){ var b2 = document.getElementById('s2next'); b2.hidden = false; fadeIn(b2, 300); }
+    if(n===4) enterS4();
+    if(n===5) enterS5();
+    if(n===6) enterS6();
+  }
+  backBtn.addEventListener('click', function(){
+    if(BACK[current] !== undefined) goto(BACK[current]);
+  });
+
+  /* fade helper (snap when frames aren't ticking — transitions would freeze) */
+  function fadeIn(el, delay){
+    if(!el) return;
+    var run = function(){
+      if(!live() || reduce){ el.style.transition='none'; }
+      el.classList.add('show');
+      ensureVisible(el, 2800);
+    };
+    if(reduce || !live()){ run(); }
+    else { setTimeout(run, delay||0); }
+  }
+
+  /* ================= 夜の硝子カード ================= */
+  var RANK_N = {bronze:1, silver:2, gold:3, platinum:4};
+  var KD = '〇一二三四五六七八九';
+  function kanjiNum(n){
+    if(n < 10) return KD[n];
+    var t = Math.floor(n/10), o = n%10;
+    return (t > 1 ? KD[t] : '') + '十' + (o ? KD[o] : '');
+  }
+  function kanjiDate(d){
+    var y = String(d.getFullYear()).replace(/\d/g, function(c){ return KD[+c]; });
+    return y + '年' + kanjiNum(d.getMonth()+1) + '月' + kanjiNum(d.getDate()) + '日';
+  }
+  var unlockDates = {};
+  function buildCard(data, id, holdable){
+    var card = document.createElement('article');
+    card.className = 'hg' + (holdable ? '' : ' sealedglass');
+    card.setAttribute('data-id', id);
+    card.setAttribute('data-tier', data.tier);
+    var rank = RANK_N[data.tier] || 1;
+    var bars = '';
+    for(var i=1;i<=4;i++) bars += '<span class="'+(i<=rank?'on':'')+'"></span>';
+    card.innerHTML =
+      '<div class="hg-scene"><div class="hg-moon"></div><div class="hg-lamps">' +
+        '<span class="hg-bokeh b1"></span><span class="hg-bokeh b2"></span><span class="hg-bokeh b3"></span>' +
+        '<span class="hg-bokeh b4"></span><span class="hg-bokeh b5"></span><span class="hg-bokeh b6"></span>' +
+      '</div></div>' +
+      '<div class="hg-frost"></div>' +
+      '<div class="hg-sheen" aria-hidden="true"></div>' +
+      '<div class="hg-inner" aria-hidden="true"></div>' +
+      '<div class="hg-content">' +
+        (holdable ? '<span class="hg-rank" aria-hidden="true">'+bars+'</span>' : '') +
+        '<h3 class="hg-title"><span class="hg-label">'+TIER[data.tier].label+'</span><span class="t">『'+data.t+'』</span></h3>' +
+        '<p class="hg-cond">'+data.c+'</p>' +
+        (holdable ?
+          '<div class="hg-foot">' +
+            '<div class="hg-press"><button class="hg-btn" type="button" aria-label="長押しで解除">' +
+              '<span class="hg-ring"></span><span class="hg-core"></span></button>' +
+              '<p class="hg-plabel">長押しで解除</p></div>' +
+            '<div class="hg-after"><p class="hg-date"></p></div>' +
+          '</div>' : '') +
+      '</div>';
+    if(unlocked[id]) setUnlockedNow(card, id);
+    return card;
+  }
+  function fitTitle(card){ /* 二つ名は絶対に改行させない＝幅に合わせて縮める */
+    var t = card.querySelector('.hg-title .t');
+    if(!t) return;
+    t.style.fontSize = '';
+    requestAnimationFrame(function(){
+      var fs = parseFloat(getComputedStyle(t).fontSize);
+      while(t.scrollWidth > t.clientWidth && fs > 15){
+        fs -= 1;
+        t.style.fontSize = fs + 'px';
+      }
+    });
+  }
+  function setUnlockedNow(card, id){ /* 既解除カードの再構築（演出なし） */
+    card.classList.add('unlocked');
+    var frost = card.querySelector('.hg-frost');
+    frost.style.transition = 'none';
+    frost.style.opacity = '0';
+    var lamps = card.querySelector('.hg-lamps');
+    lamps.style.opacity = '1';
+    var dt = card.querySelector('.hg-date');
+    if(dt) dt.textContent = (unlockDates[id] || kanjiDate(new Date())) + '　解除';
+  }
+
+  /* ================= 長押し＝曇りを拭う ================= */
+  var HOLD = 1000;
+  function makeHoldable(card, id, onUnlock){
+    var btn = card.querySelector('.hg-btn');
+    if(!btn) return;
+    var ring = card.querySelector('.hg-ring');
+    var core = card.querySelector('.hg-core');
+    var frost = card.querySelector('.hg-frost');
+    var lamps = card.querySelector('.hg-lamps');
+    var raf=null, start=0, done=!!unlocked[id];
+
+    function setP(p){
+      var pe = Math.pow(p, 3);
+      ring.style.background = 'conic-gradient(rgba(238,206,140,.95) '+(p*360).toFixed(1)+'deg, rgba(200,212,236,.16) 0deg)';
+      core.style.opacity = p.toFixed(3);
+      core.style.transform = 'scale('+(0.4+p*0.6).toFixed(3)+')';
+      var a = (pe*105).toFixed(1), b = (pe*105+22).toFixed(1);
+      var m = 'radial-gradient(circle at 50% 86%, transparent '+a+'%, black '+b+'%)';
+      frost.style.webkitMaskImage = m; frost.style.maskImage = m;
+      lamps.style.opacity = (0.32+pe*0.55).toFixed(3);
+    }
+    function tick(t){
+      if(!start) start=t;
+      var p = Math.min((t-start)/HOLD, 1);
+      setP(p);
+      if(p>=1){ finish(); return; }
+      raf = requestAnimationFrame(tick);
+    }
+    function finish(){
+      if(done) return; done=true;
+      cancel();
+      btn.classList.remove('pressing');
+      unlocked[id] = true;
+      unlockDates[id] = kanjiDate(new Date());
+      var m = 'radial-gradient(circle at 50% 86%, transparent 150%, black 175%)';
+      frost.style.transition = '';
+      frost.style.webkitMaskImage = m; frost.style.maskImage = m;
+      frost.style.opacity = '0';
+      lamps.style.transition = '';
+      lamps.style.opacity = '1';
+      var dt = card.querySelector('.hg-date');
+      if(dt) dt.textContent = unlockDates[id] + '　解除';
+      card.classList.add('unlocked');
+      if(!reduce && live()){
+        card.classList.add('just');
+        setTimeout(function(){ card.classList.remove('just'); }, 3600);
+      }
+      syncRows();
+      if(onUnlock) onUnlock();
+    }
+    function cancel(){ if(raf){ cancelAnimationFrame(raf); raf=null; } }
+    function abort(){
+      if(done) return; cancel();
+      btn.classList.remove('pressing');
+      ring.style.background = '';
+      core.style.opacity = '0'; core.style.transform = 'scale(.4)';
+      frost.style.webkitMaskImage = ''; frost.style.maskImage = '';
+      frost.style.transition = '';
+      lamps.style.opacity = ''; lamps.style.transition = '';
+    }
+    function begin(e){
+      if(done) return;
+      if(e.cancelable) e.preventDefault();
+      if(btn.setPointerCapture && e.pointerId !== undefined){
+        try{ btn.setPointerCapture(e.pointerId); }catch(_){}
+      }
+      btn.classList.add('pressing');
+      frost.style.transition = 'none';
+      lamps.style.transition = 'none';
+      start=0; raf=requestAnimationFrame(tick);
+    }
+    btn.addEventListener('pointerdown', begin);
+    btn.addEventListener('pointerup', abort);
+    btn.addEventListener('pointerleave', abort);
+    btn.addEventListener('pointercancel', abort);
+    card.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+  }
+
+  /* ================= screen 0 ================= */
+  var fl = document.getElementById('firstlight');
+  var c0 = fl.querySelector('circle');
+  var CIRC0 = 2*Math.PI*62;
+  c0.style.setProperty('--circ0', CIRC0+'px');
+
+  function s0End(){
+    c0.style.strokeDashoffset = '0px';
+    fl.classList.add('lit');
+    fadeIn(document.getElementById('s0title'), 350);
+    fadeIn(document.getElementById('s0sub'), 1100);
+    fadeIn(document.getElementById('s0next'), 2400);
+    s0ready = true;
+  }
+  var s0ready = false;
+  var s0started = false;
+  function s0Run(){
+    if(s0started || s0ready) return;
+    s0started = true;
+    if(reduce){ s0End(); return; }
+    var D = 1750, st = 0;
+    function tick(t){
+      if(!st) st = t;
+      var p = Math.min((t-st)/D, 1);
+      var e = 1 - Math.pow(1-p, 2.2);     // ease-out
+      c0.style.strokeDashoffset = (CIRC0*(1-e)).toFixed(1)+'px';
+      if(p>=1){ s0End(); return; }
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+  document.getElementById('s0next').addEventListener('click', function(e){ e.stopPropagation(); goto(1); });
+  document.getElementById('s0').addEventListener('click', function(){ if(s0ready) goto(1); });
+
+  /* ================= screen 1 ================= */
+  document.getElementById('s1next').addEventListener('click', function(){ goto(2); });
+
+  /* ================= screen 2 ================= */
+  var fc = buildCard(FIRST, 'first', true);
+  document.getElementById('firstcard').appendChild(fc);
+  fitTitle(fc);
+  makeHoldable(fc, 'first', function(){
+    setTimeout(function(){ if(current===2) goto(3); }, reduce ? 1200 : 5200);
+  });
+  document.getElementById('s2next').addEventListener('click', function(e){ e.stopPropagation(); goto(3); });
+  document.getElementById('s2').addEventListener('click', function(e){
+    if(current===2 && unlocked['first'] && !e.target.closest('.hg-btn')) goto(3);
+  });
+
+  /* ================= screen 3 ================= */
+  var toc = document.getElementById('toc');
+  var heroslot = document.getElementById('heroslot');
+  var s3el = document.getElementById('s3');
+  var selChip = CHIPS[0].id;
+  var selRow = 0;
+  var mqMob = window.matchMedia('(max-width: 859px)');
+
+  function chipOf(id){ return CHIPS.find(function(c){ return c.id===id; }); }
+  function catMark(ch, lit){
+    if(ch.dot){
+      var n = RANK_N[ch.dot] || 1, sp = '';
+      for(var i=1;i<=4;i++) sp += '<span class="'+(i<=n?'on':'')+'"></span>';
+      return '<span class="cat-mark bars'+(lit?' lit':'')+'">'+sp+'</span>';
+    }
+    return '<span class="cat-mark lamp'+(lit?' lit':'')+'"></span>';
+  }
+  function buildToc(){
+    toc.innerHTML = '';
+    CHIPS.forEach(function(ch){
+      var cat = document.createElement('div');
+      cat.className = 'vb-cat' + (ch.id===selChip ? ' open' : '');
+      cat.setAttribute('data-cat', ch.id);
+      var head = document.createElement('button');
+      head.type = 'button';
+      head.className = 'vb-cat-head';
+      head.innerHTML = '<span>'+ch.name+'</span><span class="vb-leader"></span>' + catMark(ch, ch.id===selChip);
+      head.addEventListener('click', function(){ pickCat(ch.id); });
+      cat.appendChild(head);
+      var en = document.createElement('div');
+      en.className = 'vb-entries';
+      ch.cards.forEach(function(cd, i){
+        var rid = ch.id + '-' + i;
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'vb-entry' + (ch.id===selChip && i===selRow ? ' sel' : '');
+        b.setAttribute('data-rid', rid);
+        b.innerHTML = '<span class="udot'+(unlocked[rid]?' on':'')+'"></span>' +
+          '<span><span class="vb-entry-title">『'+cd.t+'』</span><span class="vb-entry-cond">'+cd.c+'</span></span>';
+        b.addEventListener('click', function(){ pickEntry(ch.id, i); });
+        en.appendChild(b);
+      });
+      var pad = document.createElement('div');
+      pad.className = 'vb-pad';
+      en.appendChild(pad);
+      cat.appendChild(en);
+      toc.appendChild(cat);
+    });
+  }
+  function refreshToc(){
+    document.querySelectorAll('#toc .vb-cat').forEach(function(c){
+      var open = c.getAttribute('data-cat') === selChip;
+      c.classList.toggle('open', open);
+      var mk = c.querySelector('.cat-mark');
+      if(mk) mk.classList.toggle('lit', open);
+    });
+    document.querySelectorAll('#toc .vb-entry').forEach(function(b){
+      var rid = b.getAttribute('data-rid');
+      b.classList.toggle('sel', rid === selChip + '-' + selRow);
+      b.querySelector('.udot').classList.toggle('on', !!unlocked[rid]);
+    });
+  }
+  function syncRows(){ refreshToc(); }
+  function renderHero(id, i){
+    var cd = chipOf(id).cards[i];
+    var rid = id + '-' + i;
+    heroslot.innerHTML = '';
+    var card = buildCard(cd, rid, true);
+    card.classList.add('swapin');
+    heroslot.appendChild(card);
+    makeHoldable(card, rid);
+    fitTitle(card);
+  }
+  function pickCat(id){
+    if(id !== selChip){ selChip = id; selRow = 0; }
+    refreshToc();
+    renderHero(selChip, selRow);
+  }
+  function pickEntry(id, i){
+    selChip = id; selRow = i;
+    refreshToc();
+    renderHero(id, i);
+    if(mqMob.matches){ s3el.classList.add('sheetopen'); }
+  }
+  document.getElementById('scrim').addEventListener('click', function(){ s3el.classList.remove('sheetopen'); });
+  document.getElementById('handle').addEventListener('click', function(){ s3el.classList.remove('sheetopen'); });
+  buildToc();
+  renderHero(selChip, selRow);
+  document.getElementById('s3next').addEventListener('click', function(){ goto(4); });
+
+  /* ================= screen 4 ================= */
+  var s4Inited = false;
+  function enterS4(){
+    document.getElementById('countnum').textContent = count();
+    if(s4Inited) return;
+    s4Inited = true;
+    fadeIn(document.getElementById('countline'), 200);
+    fadeIn(document.getElementById('scaleline'), 1500);
+    var bands = document.getElementById('bands');
+    buildBands(bands);
+    var showBands = function(){
+      bands.classList.add('on');
+      fadeIn(document.getElementById('s4next'), 1400);
+    };
+    if(reduce || !live()){ showBands(); }
+    else { setTimeout(showBands, 2900); }
+    buildLightfield();
+  }
+  document.getElementById('s4next').addEventListener('click', function(){ goto(5); });
+
+  function buildBands(root){
+    BANDS.forEach(function(items, bi){
+      var band = document.createElement('div');
+      band.className = 'band' + (bi%2===1 ? ' rev' : '');
+      band.style.setProperty('--bd', (bi*0.22).toFixed(2)+'s');
+      var track = document.createElement('div');
+      track.className = 'track';
+      track.style.setProperty('--dur', (52 + bi*7) + 's');
+      for(var rep=0; rep<2; rep++){
+        items.forEach(function(it){
+          var m = document.createElement('div');
+          m.className = 'mini';
+          m.innerHTML = '<h4>『'+it[0]+'』</h4><p>'+it[1]+'</p>';
+          track.appendChild(m);
+        });
+      }
+      band.appendChild(track);
+      root.appendChild(band);
+    });
+  }
+
+  function buildLightfield(){
+    var ff = document.getElementById('lightfield');
+    var n = 90;
+    var frag = document.createDocumentFragment();
+    for(var i=0;i<n;i++){
+      var d = document.createElement('span');
+      d.className = 'lp';
+      var depth = Math.random();
+      var size = 1 + depth*3.2;
+      var op = 0.15 + depth*0.55;
+      d.style.left = (Math.random()*100)+'%';
+      d.style.top = (Math.random()*100)+'%';
+      d.style.width = size+'px';
+      d.style.height = size+'px';
+      d.style.opacity = op;
+      d.style.boxShadow = '0 0 '+(3+depth*9)+'px '+(1+depth*2)+'px rgba(242,179,107,'+(0.4*op).toFixed(2)+')';
+      if(!reduce){
+        d.style.animation = 'twk '+(3+Math.random()*4).toFixed(2)+'s ease-in-out '+(Math.random()*4).toFixed(2)+'s infinite';
+      }
+      frag.appendChild(d);
+    }
+    ff.appendChild(frag);
+  }
+
+  /* ---- 静かな灯りの塵（画面2・3・6の背景深度） ---- */
+  function buildDust(id, n){
+    var sec = document.getElementById(id);
+    var layer = document.createElement('div');
+    layer.className = 'dust';
+    layer.setAttribute('aria-hidden','true');
+    for(var i=0;i<n;i++){
+      var d = document.createElement('span');
+      d.className = 'lp';
+      var depth = Math.random();
+      var size = 1 + depth*2.4;
+      var op = 0.10 + depth*0.4;
+      d.style.left = (Math.random()*100)+'%';
+      d.style.top = (Math.random()*100)+'%';
+      d.style.width = size+'px';
+      d.style.height = size+'px';
+      d.style.opacity = op;
+      d.style.boxShadow = '0 0 '+(2+depth*7)+'px '+(1+depth*1.5)+'px rgba(242,179,107,'+(0.35*op).toFixed(2)+')';
+      if(!reduce){
+        d.style.animation = 'twk '+(4+Math.random()*4).toFixed(2)+'s ease-in-out '+(Math.random()*5).toFixed(2)+'s infinite';
+      }
+      layer.appendChild(d);
+    }
+    sec.insertBefore(layer, sec.firstChild);
+  }
+  buildDust('s2', 14); buildDust('s3', 12); buildDust('s6', 16);
+
+  /* ================= screen 5（タップ送り・夜の特別カード） ================= */
+  function enterS5(){
+    var wrap = document.getElementById('hiddenwrap');
+    if(!wrap.children.length){
+      var hc = document.createElement('article');
+      hc.className = 'sp';
+      hc.innerHTML =
+        '<h3>『'+HIDDEN.t+'』</h3>' +
+        '<p class="cond">'+HIDDEN.c+'</p>' +
+        '<span class="sbtn" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="27"></circle></svg><span class="score"></span></span>';
+      wrap.appendChild(hc);
+    }
+    fadeIn(wrap, 500);
+    fadeIn(document.getElementById('s5cue'), reduce ? 300 : 2100);
+  }
+  document.getElementById('s5').addEventListener('click', function(){
+    if(current===5) goto(6);
+  });
+
+  /* ================= screen 6｜コピー再掲（灯→コピー→サブ→下へ案内・手動スクロール） ================= */
+  var s6Bound = false;
+  function enterS6(){
+    var sc = screens[6];
+    var target = document.getElementById('pricearea');
+    fadeIn(document.getElementById('endlight'), 300);
+    fadeIn(document.getElementById('s6copy'), 1000);
+    fadeIn(document.getElementById('s6sub'), 2300);
+    fadeIn(document.getElementById('s6cue'), 3100);
+    fadeIn(document.getElementById('pricebox'), 600);
+    fadeIn(document.getElementById('ctablock'), 900);
+    if(s6Bound) return;
+    s6Bound = true;
+    document.getElementById('copybeat').addEventListener('click', function(){
+      sc.scrollTo({top: target.offsetTop, behavior: reduce ? 'auto' : 'smooth'});
+    });
+    /* スクロール補助: 少し下げたら価格セクションまで送り届ける */
+    var assisting = false, armed = true;
+    sc.addEventListener('scroll', function(){
+      var st = sc.scrollTop;
+      if(assisting){
+        if(st < 8 || Math.abs(st - target.offsetTop) < 6) assisting = false;
+        return;
+      }
+      if(st < 8){ armed = true; return; }
+      if(armed && st > 70 && st < target.offsetTop * 0.6){
+        armed = false; assisting = true;
+        sc.scrollTo({top: target.offsetTop, behavior: reduce ? 'auto' : 'smooth'});
+        setTimeout(function(){ assisting = false; }, 1500);
+      }
+    }, {passive:true});
+  }
+
+  /* ================= init ================= */
+  goto(0);
+  if(document.fonts && document.fonts.ready){
+    document.fonts.ready.then(function(){
+      document.querySelectorAll('.hg').forEach(fitTitle);
+    });
+  }
+  // start screen-0 sequence on the first real frame; snap if frames never come
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ s0Run(); }); });
+  setTimeout(function(){ if(!s0started && !s0ready){ s0End(); } }, 800);
+  function snap(n){
+    goto(n);
+    var sc = screens[n];
+    sc.style.transition = 'none';
+    sc.querySelectorAll('.fad').forEach(function(el){ el.style.transition='none'; el.classList.add('show'); });
+  }
+  window.__lp = { goto: goto, snap: snap, count: count, unlocked: unlocked };
+})();
+</script>
+
+<style>
+@keyframes twk{0%,100%{filter:brightness(.7);}50%{filter:brightness(1.3);}}
+</style>
+
+</body>
+</html>
